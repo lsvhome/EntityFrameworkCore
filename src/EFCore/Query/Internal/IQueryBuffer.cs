@@ -94,9 +94,9 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
             int correlatedCollectionId,
             [NotNull] INavigation navigation,
             [NotNull] Func<INavigation, TCollection> resultCollectionFactory,
-            MaterializedAnonymousObject outerKey,
+            AnonymousObject outerKey,
             bool tracking,
-            [NotNull] Func<IEnumerable<Tuple<TInner, MaterializedAnonymousObject, MaterializedAnonymousObject>>> correlatedCollectionFactory,
-            [NotNull] Func<MaterializedAnonymousObject, MaterializedAnonymousObject, bool> correlationPredicate) where TCollection : ICollection<TInner>;
+            [NotNull] Func<IEnumerable<Tuple<TInner, AnonymousObject, AnonymousObject>>> correlatedCollectionFactory,
+            [NotNull] Func<AnonymousObject, AnonymousObject, bool> correlationPredicate) where TCollection : ICollection<TInner>;
     }
 }

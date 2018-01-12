@@ -139,8 +139,7 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionVisitors
         {
             Check.NotNull(newExpression, nameof(newExpression));
 
-            if (newExpression.Type == typeof(AnonymousObject)
-                || newExpression.Type == typeof(MaterializedAnonymousObject))
+            if (newExpression.Type == typeof(AnonymousObject))
             {
                 var propertyCallExpressions
                     = ((NewArrayExpression)newExpression.Arguments.Single()).Expressions;

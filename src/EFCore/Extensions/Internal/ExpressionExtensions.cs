@@ -10,6 +10,7 @@ using System.Reflection;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore.Extensions.Internal;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Query.Expressions.Internal;
 using Microsoft.EntityFrameworkCore.Query.Internal;
 using Microsoft.EntityFrameworkCore.Utilities;
 using Remotion.Linq.Clauses;
@@ -382,17 +383,9 @@ namespace Microsoft.EntityFrameworkCore.Internal
 
             return properties.Count == 1
                 ? target.CreateEFPropertyExpression(properties[0])
-                : Expression.New(
-                    AnonymousObject.AnonymousObjectCtor,
-                    Expression.NewArrayInit(
-                        typeof(object),
-                        properties
-                            .Select(p =>
-                                Expression.Convert(
-                                    target.CreateEFPropertyExpression(p),
-                                    typeof(object)))
-                            .Cast<Expression>()
-                            .ToArray()));
+                : new AnonymousObjectExpression(
+                    properties.Select(p => target.CreateEFPropertyExpression(p)),
+                    shouldMaterialize: false);
         }
     }
 }

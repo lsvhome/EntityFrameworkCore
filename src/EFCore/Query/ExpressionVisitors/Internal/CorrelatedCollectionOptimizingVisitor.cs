@@ -199,11 +199,15 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionVisitors.Internal
                 subQueryProjection);
 
             clonedParentQueryModel.SelectClause.Selector
-                = Expression.New(
-                    MaterializedAnonymousObject.AnonymousObjectCtor,
-                    Expression.NewArrayInit(
-                        typeof(object),
-                        subQueryProjection.Select(e => Expression.Convert(e, typeof(object)))));
+                = new AnonymousObjectExpression(
+                    subQueryProjection,
+                    shouldMaterialize: true);
+
+                //= Expression.New(
+                //    MaterializedAnonymousObject.AnonymousObjectCtor,
+                //    Expression.NewArrayInit(
+                //        typeof(object),
+                //        subQueryProjection.Select(e => Expression.Convert(e, typeof(object)))));
 
             clonedParentQueryModel.ResultTypeOverride = typeof(IQueryable<>).MakeGenericType(clonedParentQueryModel.SelectClause.Selector.Type);
 
@@ -215,8 +219,8 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionVisitors.Internal
 
             var tupleCtor = typeof(Tuple<,,>).MakeGenericType(
                 collectionQueryModel.SelectClause.Selector.Type,
-                typeof(MaterializedAnonymousObject),
-                typeof(MaterializedAnonymousObject)).GetConstructors().FirstOrDefault();
+                typeof(AnonymousObject),
+                typeof(AnonymousObject)).GetConstructors().FirstOrDefault();
 
             var navigationParameter = Expression.Parameter(typeof(INavigation), "n");
 
@@ -261,11 +265,15 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionVisitors.Internal
                     {
                         collectionQueryModel.SelectClause.Selector,
                         currentKey,
-                        Expression.New(
-                            MaterializedAnonymousObject.AnonymousObjectCtor,
-                            Expression.NewArrayInit(
-                                typeof(object),
-                                remappedOriginKeyElements))
+                        new AnonymousObjectExpression(
+                            remappedOriginKeyElements,
+                            shouldMaterialize: true)
+
+                            //Expression.New(
+                        //    MaterializedAnonymousObject.AnonymousObjectCtor,
+                        //    Expression.NewArrayInit(
+                        //        typeof(object),
+                        //        remappedOriginKeyElements))
                     });
 
             // Enumerable or OrderedEnumerable
@@ -312,11 +320,15 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionVisitors.Internal
         {
             var keyAccessExpressions = keyProperties.Select(p => new NullConditionalExpression(qsre, qsre.CreateEFPropertyExpression(p))).ToArray();
 
-            return Expression.New(
-                MaterializedAnonymousObject.AnonymousObjectCtor,
-                Expression.NewArrayInit(
-                    typeof(object),
-                    keyAccessExpressions.Select(k => Expression.Convert(k, typeof(object)))));
+            return new AnonymousObjectExpression(
+                keyAccessExpressions,
+                shouldMaterialize: true);
+
+            //return Expression.New(
+            //    MaterializedAnonymousObject.AnonymousObjectCtor,
+            //    Expression.NewArrayInit(
+            //        typeof(object),
+            //        keyAccessExpressions.Select(k => Expression.Convert(k, typeof(object)))));
         }
 
         private static Expression CreateCorrelationPredicate(INavigation navigation)
@@ -325,8 +337,8 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionVisitors.Internal
             var primaryKeyProperties = foreignKey.PrincipalKey.Properties;
             var foreignKeyProperties = foreignKey.Properties;
 
-            var outerKeyParameter = Expression.Parameter(typeof(MaterializedAnonymousObject), "o");
-            var innerKeyParameter = Expression.Parameter(typeof(MaterializedAnonymousObject), "i");
+            var outerKeyParameter = Expression.Parameter(typeof(AnonymousObject), "o");
+            var innerKeyParameter = Expression.Parameter(typeof(AnonymousObject), "i");
 
             return Expression.Lambda(
                 primaryKeyProperties
@@ -338,7 +350,7 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionVisitors.Internal
                             var outerKeyAccess =
                                 Expression.Call(
                                     outerKeyParameter,
-                                    MaterializedAnonymousObject.GetValueMethodInfo,
+                                    AnonymousObject.GetValueMethodInfo,
                                     Expression.Constant(outer.i));
 
                             var typedOuterKeyAccess =
@@ -349,7 +361,7 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionVisitors.Internal
                             var innerKeyAccess =
                                 Expression.Call(
                                     innerKeyParameter,
-                                    MaterializedAnonymousObject.GetValueMethodInfo,
+                                    AnonymousObject.GetValueMethodInfo,
                                     Expression.Constant(outer.i));
 
                             var typedInnerKeyAccess =
@@ -464,7 +476,7 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionVisitors.Internal
             var joinClause
                 = new JoinClause(
                     "_" + parentQuerySource.ItemName,
-                    typeof(MaterializedAnonymousObject),
+                    typeof(AnonymousObject),
                     subQueryExpression,
                     outerTargetExpression.CreateKeyAccessExpression(foreignKey.Properties),
                     Expression.Constant(null));
@@ -512,7 +524,7 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionVisitors.Internal
                     Expression.Convert(
                         Expression.Call(
                             joinQuerySourceReferenceExpression,
-                            MaterializedAnonymousObject.GetValueMethodInfo,
+                            AnonymousObject.GetValueMethodInfo,
                             Expression.Constant(index)),
                         principalKeyProperty.ClrType.MakeNullable()));
 
@@ -523,11 +535,15 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionVisitors.Internal
             joinClause.InnerKeySelector
                 = innerKeyExpressions.Count == 1
                     ? innerKeyExpressions[0]
-                    : Expression.New(
-                        AnonymousObject.AnonymousObjectCtor,
-                        Expression.NewArrayInit(
-                            typeof(object),
-                            innerKeyExpressions.Select(e => Expression.Convert(e, typeof(object)))));
+                    : new AnonymousObjectExpression(
+                        innerKeyExpressions,
+                        shouldMaterialize: false);
+
+                    //: Expression.New(
+                    //    AnonymousObject.AnonymousObjectCtor,
+                    //    Expression.NewArrayInit(
+                    //        typeof(object),
+                    //        innerKeyExpressions.Select(e => Expression.Convert(e, typeof(object)))));
 
             targetQueryModel.BodyClauses.Add(joinClause);
 
@@ -586,7 +602,7 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionVisitors.Internal
                     var newExpression
                         = Expression.Call(
                             targetExpression,
-                            MaterializedAnonymousObject.GetValueMethodInfo,
+                            AnonymousObject.GetValueMethodInfo,
                             Expression.Constant(i));
 
                     outerOrderByClause.Orderings
@@ -631,7 +647,7 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionVisitors.Internal
                 var remappedKey
                     = Expression.Call(
                         targetQsre,
-                        MaterializedAnonymousObject.GetValueMethodInfo,
+                        AnonymousObject.GetValueMethodInfo,
                         Expression.Constant(projectionIndex));
 
                 remappedKeys.Add(remappedKey);

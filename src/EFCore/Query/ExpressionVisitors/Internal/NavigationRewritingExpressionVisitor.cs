@@ -414,14 +414,21 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionVisitors.Internal
                 : node;
         }
 
-        private static NewExpression CreateNullCompositeKey(Expression otherExpression)
-            => Expression.New(
-                AnonymousObject.AnonymousObjectCtor,
-                Expression.NewArrayInit(
-                    typeof(object),
-                    Enumerable.Repeat(
-                        Expression.Constant(null),
-                        ((NewArrayExpression)((NewExpression)otherExpression).Arguments.Single()).Expressions.Count)));
+        private static Expression CreateNullCompositeKey(Expression otherExpression)
+            => new AnonymousObjectExpression(
+                Enumerable.Repeat(
+                    Expression.Constant(null),
+                    ((NewArrayExpression)((NewExpression)otherExpression).Arguments.Single()).Expressions.Count),
+                shouldMaterialize: false);
+                
+
+            //Expression.New(
+            //    AnonymousObject.AnonymousObjectCtor,
+            //    Expression.NewArrayInit(
+            //        typeof(object),
+            //        Enumerable.Repeat(
+            //            Expression.Constant(null),
+            //            ((NewArrayExpression)((NewExpression)otherExpression).Arguments.Single()).Expressions.Count)));
 
         /// <summary>
         ///     This API supports the Entity Framework Core infrastructure and is not intended to be used
@@ -1326,14 +1333,19 @@ namespace Microsoft.EntityFrameworkCore.Query.ExpressionVisitors.Internal
             Expression target, IReadOnlyList<IProperty> properties, bool addNullCheck = false)
             => properties.Count == 1
                 ? CreatePropertyExpression(target, properties[0], addNullCheck)
-                : Expression.New(
-                    AnonymousObject.AnonymousObjectCtor,
-                    Expression.NewArrayInit(
-                        typeof(object),
-                        properties
-                            .Select(p => Expression.Convert(CreatePropertyExpression(target, p, addNullCheck), typeof(object)))
-                            .Cast<Expression>()
-                            .ToArray()));
+                : new AnonymousObjectExpression(
+                    properties.Select(p => CreatePropertyExpression(target, p, addNullCheck)),
+                    shouldMaterialize: false);
+
+        
+                //: Expression.New(
+                //    AnonymousObject.AnonymousObjectCtor,
+                //    Expression.NewArrayInit(
+                //        typeof(object),
+                //        properties
+                //            .Select(p => Expression.Convert(CreatePropertyExpression(target, p, addNullCheck), typeof(object)))
+                //            .Cast<Expression>()
+                //            .ToArray()));
 
         private static Expression CreatePropertyExpression(Expression target, IProperty property, bool addNullCheck)
         {

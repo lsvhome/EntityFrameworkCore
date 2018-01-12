@@ -39,14 +39,14 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
         {
             public CorrelatedCollectionMetadataElement(
                 IDisposable enumerator,
-                MaterializedAnonymousObject previousOriginKey)
+                AnonymousObject previousOriginKey)
             {
                 Enumerator = enumerator;
                 PreviousOriginKey = previousOriginKey;
             }
 
             public IDisposable Enumerator { get; set; }
-            public MaterializedAnonymousObject PreviousOriginKey { get; set; }
+            public AnonymousObject PreviousOriginKey { get; set; }
         }
 
         /// <summary>
@@ -498,13 +498,13 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
             int correlatedCollectionId,
             INavigation navigation,
             Func<INavigation, TCollection> resultCollectionFactory,
-            MaterializedAnonymousObject outerKey,
+            AnonymousObject outerKey,
             bool tracking,
-            Func<IEnumerable<Tuple<TInner, MaterializedAnonymousObject, MaterializedAnonymousObject>>> correlatedCollectionFactory,
-            Func<MaterializedAnonymousObject, MaterializedAnonymousObject, bool> correlationPredicate) where TCollection : ICollection<TInner>
+            Func<IEnumerable<Tuple<TInner, AnonymousObject, AnonymousObject>>> correlatedCollectionFactory,
+            Func<AnonymousObject, AnonymousObject, bool> correlationPredicate) where TCollection : ICollection<TInner>
         {
             IDisposable untypedEnumerator = null;
-            IEnumerator<Tuple<TInner, MaterializedAnonymousObject, MaterializedAnonymousObject>> enumerator = null;
+            IEnumerator<Tuple<TInner, AnonymousObject, AnonymousObject>> enumerator = null;
 
             if (!_correlatedCollectionMetadata.TryGetValue(correlatedCollectionId, out var correlatedCollectionMetadataElement))
             {
@@ -533,7 +533,7 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
                     return resultCollection;
                 }
 
-                enumerator = (IEnumerator<Tuple<TInner, MaterializedAnonymousObject, MaterializedAnonymousObject>>)untypedEnumerator;
+                enumerator = (IEnumerator<Tuple<TInner, AnonymousObject, AnonymousObject>>)untypedEnumerator;
             }
 
             while (true)

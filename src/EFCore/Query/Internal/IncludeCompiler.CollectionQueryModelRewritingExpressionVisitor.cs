@@ -170,11 +170,12 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
                     subQueryProjection);
 
                 clonedParentQueryModel.SelectClause.Selector
-                    = Expression.New(
-                        AnonymousObject.AnonymousObjectCtor,
-                        Expression.NewArrayInit(
-                            typeof(object),
-                            subQueryProjection));
+                    = new AnonymousObjectExpression(subQueryProjection, shouldMaterialize: false);
+                    //= Expression.New(
+                    //    AnonymousObject.AnonymousObjectCtor,
+                    //    Expression.NewArrayInit(
+                    //        typeof(object),
+                    //        subQueryProjection));
             }
 
             private static void BuildParentOrderings(
@@ -426,11 +427,15 @@ namespace Microsoft.EntityFrameworkCore.Query.Internal
                 joinClause.InnerKeySelector
                     = innerKeyExpressions.Count == 1
                         ? innerKeyExpressions[0]
-                        : Expression.New(
-                            AnonymousObject.AnonymousObjectCtor,
-                            Expression.NewArrayInit(
-                                typeof(object),
-                                innerKeyExpressions.Select(e => Expression.Convert(e, typeof(object)))));
+                        : new AnonymousObjectExpression(
+                            innerKeyExpressions,
+                            shouldMaterialize: false);
+
+                        //: Expression.New(
+                        //    AnonymousObject.AnonymousObjectCtor,
+                        //    Expression.NewArrayInit(
+                        //        typeof(object),
+                        //        innerKeyExpressions.Select(e => Expression.Convert(e, typeof(object)))));
 
                 targetQueryModel.BodyClauses.Add(joinClause);
 
