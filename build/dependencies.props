@@ -17,7 +17,7 @@
     <MoqPackageVersion>4.7.49</MoqPackageVersion>
     <NewtonsoftJsonRuntimePackageVersion>10.0.1</NewtonsoftJsonRuntimePackageVersion>
     <RemotionLinqPackageVersion>2.1.1</RemotionLinqPackageVersion>
-    <SQLitePCLRawBundle_greenPackageVersion>1.1.7</SQLitePCLRawBundle_greenPackageVersion>
+    <SQLitePCLRawBundle_greenPackageVersion>1.1.9</SQLitePCLRawBundle_greenPackageVersion>
     <StyleCopAnalyzersPackageVersion>1.0.0</StyleCopAnalyzersPackageVersion>
     <SystemCollectionsImmutablePackageVersion>1.4.0</SystemCollectionsImmutablePackageVersion>
     <SystemComponentModelAnnotationsPackageVersion>4.4.0</SystemComponentModelAnnotationsPackageVersion>
