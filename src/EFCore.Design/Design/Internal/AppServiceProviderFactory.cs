@@ -5,6 +5,7 @@ using System;
 using System.Reflection;
 using JetBrains.Annotations;
 using Microsoft.EntityFrameworkCore.Internal;
+//using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Microsoft.EntityFrameworkCore.Design.Internal
@@ -64,7 +65,7 @@ namespace Microsoft.EntityFrameworkCore.Design.Internal
                 var webHost = buildWebHostMethod.Invoke(null, new object[] { args });
                 var webHostType = webHost.GetType();
                 var servicesProperty = webHostType.GetTypeInfo().GetDeclaredProperty("Services");
-                var services = (IServiceProvider)servicesProperty.GetValue(webHost);
+                var services = (IServiceScopeFactory)servicesProperty.GetValue(webHost);
 
                 return services.CreateScope().ServiceProvider;
             }
