@@ -30,9 +30,12 @@ Microsoft.EntityFrameworkCore.DbSet
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\asplabs\src\Microsoft.Extensions\Microsoft.Extensions\Microsoft.Extensions.csproj" />
     <ProjectReference Include="..\..\..\caching\src\Microsoft.Extensions.Caching.Abstractions\Microsoft.Extensions.Caching.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\caching\src\Microsoft.Extensions.Caching.Memory\Microsoft.Extensions.Caching.Memory.csproj" />
+    <ProjectReference Include="..\..\..\DependencyInjection\src\DI.Abstractions\DI.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\DependencyInjection\src\DI\DI.csproj" />
+    <ProjectReference Include="..\..\..\logging\src\Microsoft.Extensions.Logging.Abstractions\Microsoft.Extensions.Logging.Abstractions.csproj" />
+    <ProjectReference Include="..\..\..\logging\src\Microsoft.Extensions.Logging\Microsoft.Extensions.Logging.csproj" />
   </ItemGroup>
 
   <ItemGroup>
