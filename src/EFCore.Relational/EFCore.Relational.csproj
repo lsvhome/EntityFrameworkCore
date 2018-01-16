@@ -10,7 +10,6 @@
     <NoWarn>$(NoWarn);CS1591</NoWarn>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <CodeAnalysisRuleSet>..\EFCore.ruleset</CodeAnalysisRuleSet>
-    <SignAssembly>false</SignAssembly>
   </PropertyGroup>
 
   <ItemGroup>
